@@ -42,33 +42,39 @@ if not os.path.exists(args.output_dir):
 if not os.path.isdir(args.output_dir):
     raise ValueError("The output directory specified is not a directory.")
 
-print("Converting to PPTX...")
+#print("Converting to PPTX...")
 
-for src_filename in tqdm(os.listdir(args.input_dir)):
-    if src_filename.endswith(".ppt"):
-        print(src_filename)
-        print(['unoconv', '-f', 'pptx', '-o', os.path.abspath(args.output_dir), src_filename])
-        subprocess.run(['unoconv', '-f', 'pptx', '-o', os.path.abspath(args.output_dir), src_filename], cwd=args.input_dir)
+#for src_filename in tqdm(os.listdir(args.input_dir)):
+    #if src_filename.endswith(".ppt"):
+        #print(src_filename)
+        #print(['unoconv', '-f', 'pptx', '-o', os.path.abspath(args.output_dir), src_filename])
+        #subprocess.run(['unoconv', '-f', 'pptx', '-o', os.path.abspath(args.output_dir), src_filename], cwd=args.input_dir)
 
 print("Extracting PPTX to ZIP...")
 
 # loop over output folder and investigate zips for bin files
-for pptx_file in tqdm(os.listdir(args.output_dir)):
+for pptx_file in tqdm([os.path.join(dp, f) for dp, dn, fn in os.walk(args.output_dir) for f in fn]):
     print(pptx_file)
     if pptx_file.endswith(".pptx"):
-        zip_pptx = zipfile.ZipFile(os.path.join(args.output_dir, pptx_file), 'r')
+        zip_pptx = zipfile.ZipFile(pptx_file, 'r')
 
+        anim_count = 0
         for entry_info in zip_pptx.infolist():
             #print(entry_info.filename)
             if entry_info.filename.endswith('.bin'):
                 zip_pptx.extract(entry_info, path=args.output_dir)
-                anim_dest=os.path.join(args.output_dir, pptx_file + ".Animations", entry_info.filename)
+                anim_dest=os.path.join(pptx_file + ".Animations", entry_info.filename)
+                print(os.path.join(args.output_dir, entry_info.filename))
                 os.renames(old=os.path.join(args.output_dir, entry_info.filename), new=anim_dest)
                 print("Extracted bin animation ", anim_dest)
 
-                subprocess.run(['csplitb', '--prefix', pptx_file, '--suffix', '.swf', '--number', '2', '465753', anim_dest])
+                subprocess.run(['csplitb', '--prefix', pptx_file + str(anim_count), '--suffix', '.swf', '--number', '2', '465753', anim_dest], cwd=os.getcwd())
 
-                for anim_dest_file in os.listdir(os.getcwd()):
+                print("Ran csplitb for ", anim_dest)
+
+                anim_count += 1
+
+                for anim_dest_file in os.listdir(os.path.dirname(pptx_file)):
                     if anim_dest_file.endswith(".swf"):
                         print("Move ", anim_dest_file, "into place")
-                        os.rename(src=os.path.join(os.getcwd(), anim_dest_file), dst=os.path.join(args.output_dir, pptx_file + ".Animations", anim_dest_file))
+                        os.renames(old=os.path.join(os.path.dirname(pptx_file), anim_dest_file), new=os.path.join(pptx_file + ".Animations", anim_dest_file))
