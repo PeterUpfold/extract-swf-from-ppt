@@ -1,4 +1,6 @@
 ' convert-ppt-to-pptx
+'
+' VBA macro to batch convert a folder of *.ppt files to Office Open XML format (*.pptx)
 ' 
 ' Create a PowerPoint presentation that is macro-enabled. In the Developer tab of the ribbon, click
 ' Visual Basic. Right click on the project and choose Insert > Module.
@@ -7,7 +9,11 @@
 '
 ' Paste this into the module, altering "Basedir" below and you can use the Run button inside the 
 ' VBA project window to perform the conversion on a whole folder of .ppt.
-' 
+'
+' Based on Syon DP's answer to <https://stackoverflow.com/questions/46198205/vba-macro-batch-saveas-pptm-to-pptx#46198973>
+' <https://stackoverflow.com/users/2398630/siyon-dp>.
+'
+' Therefore, this file is licensed under CC BY-SA 4.0. <https://creativecommons.org/licenses/by-sa/4.0/>
 
 
 Sub ProcessFiles()
