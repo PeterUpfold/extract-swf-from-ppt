@@ -28,7 +28,7 @@ import zipfile
 
 argparser = argparse.ArgumentParser(description='Convert PowerPoint 97-2003 fiels and extract Flash files (*.swf) from inside them.')
 argparser.add_argument('-i', '--input-dir', dest='input_dir', help='The directory containing source files', required=True)
-argparser.add_argument('-o', '--output-dir', dest='output_dir', help='The directory where output files should be written.', required=True)
+#argparser.add_argument('-o', '--output-dir', dest='output_dir', help='The directory where output files should be written.', required=True)
 
 args = argparser.parse_args()
 
@@ -36,11 +36,11 @@ if not os.path.isdir(args.input_dir):
     raise ValueError("The input directory specified is not a directory.")
 
 # check output path
-if not os.path.exists(args.output_dir):
-    raise ValueError("The output directory specified does not exist.")
+#if not os.path.exists(args.output_dir):
+    #raise ValueError("The output directory specified does not exist.")
 
-if not os.path.isdir(args.output_dir):
-    raise ValueError("The output directory specified is not a directory.")
+#if not os.path.isdir(args.output_dir):
+    #raise ValueError("The output directory specified is not a directory.")
 
 #print("Converting to PPTX...")
 
@@ -53,7 +53,7 @@ if not os.path.isdir(args.output_dir):
 print("Extracting PPTX to ZIP...")
 
 # loop over output folder and investigate zips for bin files
-for pptx_file in tqdm([os.path.join(dp, f) for dp, dn, fn in os.walk(args.output_dir) for f in fn]):
+for pptx_file in tqdm([os.path.join(dp, f) for dp, dn, fn in os.walk(args.input_dir) for f in fn]):
     print(pptx_file)
     if pptx_file.endswith(".pptx"):
         zip_pptx = zipfile.ZipFile(pptx_file, 'r')
